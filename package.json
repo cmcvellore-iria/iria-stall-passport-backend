@@ -1,0 +1,15 @@
+{
+  "name": "iria-stall-passport-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "better-sqlite3": "^9.4.0",
+    "cors": "^2.8.5"
+  }
+}
