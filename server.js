@@ -16,6 +16,7 @@ app.get("/health", (req, res) => {
 
 /* ================== IN-MEMORY STORE ================== */
 const users = {};        // email -> { name, email, passwordHash, visits:Set }
+const approvedEmails = new Set();
 const visitTokens = {};  // token -> { stall, exp }
 
 /* ================== HELPERS ================== */
@@ -47,13 +48,14 @@ app.post("/api/signup", async (req, res) => {
 
   const cleanEmail = email.toLowerCase().trim();
 
-  // 🔒 EMAIL VALIDATION (from uploaded CSV)
+  // ✅ Email must exist in uploaded registration list
   if (!registeredEmails.has(cleanEmail)) {
     return res.status(403).json({
       error: "Email not found in conference registration list"
     });
   }
 
+  // ✅ Prevent duplicate accounts
   if (users[cleanEmail]) {
     return res.status(400).json({ error: "User already exists" });
   }
