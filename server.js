@@ -17,6 +17,17 @@ app.get("/health", (req, res) => {
 /* ================== IN-MEMORY STORE ================== */
 const users = {};        // email -> { name, email, passwordHash, visits:Set }
 const approvedEmails = new Set();
+try {
+  const csv = fs.readFileSync("registered_emails.csv", "utf8");
+  csv.split(/\r?\n/).forEach(line => {
+    const email = line.trim().toLowerCase();
+    if (email) approvedEmails.add(email);
+  });
+  console.log("Loaded", approvedEmails.size, "approved emails");
+} catch (e) {
+  console.error("Failed to load registered_emails.csv");
+}
+
 approvedEmails.add("test@example.com");
 
 const visitTokens = {};  // token -> { stall, exp }
