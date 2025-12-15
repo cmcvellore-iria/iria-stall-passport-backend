@@ -28,8 +28,6 @@ try {
   console.error("Failed to load registered_emails.csv");
 }
 
-approvedEmails.add("test@example.com");
-
 const visitTokens = {};  // token -> { stall, exp }
 
 /* ================== HELPERS ================== */
