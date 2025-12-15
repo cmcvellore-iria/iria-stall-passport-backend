@@ -126,6 +126,10 @@ app.post("/api/verify", auth, (req, res) => {
   if (!data || data.exp < Date.now() || data.stall != stall)
     return res.status(400).json({ error: "Invalid token" });
 
+  // prevent duplicate stall visit
+if (users[req.email].visits.has(Number(stall))) {
+  return res.status(400).json({ error: "Stall already recorded" });
+}
   users[req.email].visits.add(Number(stall));
   delete visitTokens[token];
 
