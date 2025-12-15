@@ -146,6 +146,18 @@ app.get("/api/leaderboard", (req, res) => {
   res.json({ top });
 });
 
+app.post("/api/admin/reset", (req, res) => {
+  const key = req.headers["admin-key"];
+  if (key !== "iriaadminreset") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  Object.values(users).forEach(u => u.visits.clear());
+  Object.keys(visitTokens).forEach(k => delete visitTokens[k]);
+
+  res.json({ ok: true });
+});
+
 /* ================== ROOT ================== */
 app.get("/", (_, res) => {
   res.send("IRIA Stall Passport Backend Running");
