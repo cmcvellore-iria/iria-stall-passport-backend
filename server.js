@@ -10,6 +10,10 @@ app.use(express.json());
 const PORT = process.env.PORT || 10000;
 const JWT_SECRET = process.env.JWT_SECRET || "iria-secret-key";
 
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 /* ================== IN-MEMORY STORE ================== */
 const users = {};        // email -> { name, email, passwordHash, visits:Set }
 const visitTokens = {};  // token -> { stall, exp }
