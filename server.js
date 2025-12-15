@@ -17,6 +17,8 @@ app.get("/health", (req, res) => {
 /* ================== IN-MEMORY STORE ================== */
 const users = {};        // email -> { name, email, passwordHash, visits:Set }
 const approvedEmails = new Set();
+approvedEmails.add("test@example.com");
+
 const visitTokens = {};  // token -> { stall, exp }
 
 /* ================== HELPERS ================== */
