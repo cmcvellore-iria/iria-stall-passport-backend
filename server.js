@@ -49,7 +49,7 @@ app.post("/api/signup", async (req, res) => {
   const cleanEmail = email.toLowerCase().trim();
 
   // ✅ Email must exist in uploaded registration list
-  if (!registeredEmails.has(cleanEmail)) {
+  if (!approvedEmails.has(cleanEmail)) {
     return res.status(403).json({
       error: "Email not found in conference registration list"
     });
