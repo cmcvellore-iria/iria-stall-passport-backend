@@ -36,17 +36,35 @@ function auth(req, res, next) {
 /* ================== AUTH ================== */
 app.post("/api/signup", async (req, res) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password)
-    return res.status(400).json({ error: "Missing fields" });
 
-  if (users[email])
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: "Missing fields" });
+  }
+
+  const cleanEmail = email.toLowerCase().trim();
+
+  // 🔒 EMAIL VALIDATION (from uploaded CSV)
+  if (!registeredEmails.has(cleanEmail)) {
+    return res.status(403).json({
+      error: "Email not found in conference registration list"
+    });
+  }
+
+  if (users[cleanEmail]) {
     return res.status(400).json({ error: "User already exists" });
+  }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  users[email] = { name, email, passwordHash, visits: new Set() };
+
+  users[cleanEmail] = {
+    name,
+    email: cleanEmail,
+    passwordHash,
+    visits: new Set()
+  };
 
   res.json({
-    token: signToken(email),
+    token: signToken(cleanEmail),
     name
   });
 });
