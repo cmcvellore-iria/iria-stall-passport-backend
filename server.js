@@ -17,7 +17,27 @@ app.get("/health", (req, res) => {
 });
 
 /* ================== IN-MEMORY STORE ================== */
-const users = {};        // email -> { name, email, passwordHash, visits:Set }
+let users = {}; // email -> { name, email, passwordHash, visits:Set }
+
+const USERS_FILE = "users.json";
+
+try {
+  const raw = fs.readFileSync(USERS_FILE, "utf8");
+  const parsed = JSON.parse(raw);
+
+  // restore Set() from stored arrays
+  Object.keys(parsed).forEach(email => {
+    users[email] = {
+      ...parsed[email],
+      visits: new Set(parsed[email].visits || [])
+    };
+  });
+
+  console.log("Loaded users from users.json");
+} catch (e) {
+  console.log("No existing users.json, starting fresh");
+}
+
 const approvedEmails = new Set();
 try {
   const csv = fs.readFileSync("registered_emails.csv", "utf8");
@@ -35,6 +55,19 @@ const visitTokens = {};  // token -> { stall, exp }
 /* ================== HELPERS ================== */
 function signToken(email) {
   return jwt.sign({ email }, JWT_SECRET, { expiresIn: "7d" });
+}
+
+function saveUsers() {
+  const serializable = {};
+
+  Object.keys(users).forEach(email => {
+    serializable[email] = {
+      ...users[email],
+      visits: Array.from(users[email].visits)
+    };
+  });
+
+  fs.writeFileSync(USERS_FILE, JSON.stringify(serializable, null, 2));
 }
 
 function auth(req, res, next) {
@@ -81,6 +114,8 @@ app.post("/api/signup", async (req, res) => {
     passwordHash,
     visits: new Set()
   };
+
+  saveUsers();
 
   res.json({
     token: signToken(cleanEmail),
@@ -131,6 +166,7 @@ if (users[req.email].visits.has(Number(stall))) {
   return res.status(400).json({ error: "Stall already recorded" });
 }
   users[req.email].visits.add(Number(stall));
+  saveUsers();
   delete visitTokens[token];
 
   res.json({ ok: true });
