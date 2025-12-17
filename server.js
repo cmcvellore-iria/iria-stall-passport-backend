@@ -158,11 +158,10 @@ app.post("/api/admin/reset", (req, res) => {
   res.json({ ok: true });
 });
 
-app.get("/api/admin/export", (req, res) => {
-  const key = req.headers["admin-key"] || req.query.key;
-  if (key !== "iriaadminreset") {
-    return res.status(403).json({ error: "Forbidden" });
-  }
+app.get("/api/admin/export", auth, (req, res) => {
+if (req.email !== "snehaljagtap.3797@gmail.com") {
+  return res.status(403).json({ error: "Forbidden" });
+}
 
   let csv = "Name,Email,Visited_Count,Visited_Stalls\n";
 
