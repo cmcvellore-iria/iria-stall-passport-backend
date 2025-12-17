@@ -158,6 +158,24 @@ app.post("/api/admin/reset", (req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/api/admin/export", (req, res) => {
+  const key = req.headers["admin-key"];
+  if (key !== "iriaadminreset") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  let csv = "Name,Email,Visited_Count,Visited_Stalls\n";
+
+  Object.values(users).forEach(u => {
+    const stalls = [...u.visits].join(" ");
+    csv += `"${u.name}","${u.email}",${u.visits.size},"${stalls}"\n`;
+  });
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", "attachment; filename=iria_stall_passport.csv");
+  res.send(csv);
+});
+
 /* ================== ROOT ================== */
 app.get("/", (_, res) => {
   res.send("IRIA Stall Passport Backend Running");
