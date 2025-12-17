@@ -159,7 +159,7 @@ app.post("/api/admin/reset", (req, res) => {
 });
 
 app.get("/api/admin/export", (req, res) => {
-  const key = req.headers["admin-key"];
+  const key = req.headers["admin-key"] || req.query.key;
   if (key !== "iriaadminreset") {
     return res.status(403).json({ error: "Forbidden" });
   }
