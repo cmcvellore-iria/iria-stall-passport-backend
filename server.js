@@ -176,6 +176,7 @@ if (users[req.email].visits.has(Number(stall))) {
 app.get("/api/leaderboard", (req, res) => {
   const top = Object.values(users)
     .map(u => ({ name: u.name, count: u.visits.size }))
+    .filter(u => u.count > 0)
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
